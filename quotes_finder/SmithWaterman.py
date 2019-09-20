@@ -41,7 +41,7 @@ def build_matrix(a, b, match_score=3, gap_cost=2, debug=False):
     return H, P
 
 
-def traceback( P, xy ):
+def traceback( P, xy, trace_history={} ):
     end_i, end_j = xy
 
     value = P.get( (end_i, end_j), 0 )
@@ -49,8 +49,9 @@ def traceback( P, xy ):
     elif value == 2 : new_i, new_j = end_i - 1, end_j
     elif value == 3 : new_i, new_j = end_i, end_j - 1
     else:
-        return end_i, end_j
-    return traceback( P, (new_i, new_j) )
+        return (end_i, end_j), trace_history
+    trace_history[(new_i, new_j)] = 1
+    return traceback( P, (new_i, new_j), trace_history )
 
 
 def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, overlap=False, debug=False ):
@@ -70,10 +71,12 @@ def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, overlap=False, de
     print( "* Traceback ... ")
     _q = time()
     quotes_all = []
+    trace_history = {}
     for (i, j), value in tqdm(H_sorted):
         if value < cutoff : continue
+        if trace_history.get( (i,j), 0 ) == 1 : continue
         end_i, end_j = i, j
-        begin_i, begin_j = traceback( P, (end_i, end_j) )
+        (begin_i, begin_j), trace_history = traceback( P, (end_i, end_j), trace_history )
         quotes_all.append( ( (begin_i, end_i), (begin_j, end_j) ) )     # string[begin:end]
     print( "  ... {:0.3f}\n".format( time()-_q ) )
 
