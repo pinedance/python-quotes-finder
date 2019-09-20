@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import sys
 import random
 
 def print_output(a, b, indices ):
@@ -10,19 +11,14 @@ def print_output(a, b, indices ):
         print( "SRC：{:08d}-{:08d}\t{}".format( i1, i2, a[i1:i2] ) )
         print()
 
+def save_result( data, filename ):
+    sys.stdout = open(filename, 'w')
+    print( data )
+    sys.stdout = sys.__stdout__
 
-def print_html(a, b, indices ):
+def save_html(a, b, indices, filename ):
 
-    style = """
-    <style>
-    .match {
-        color: blue;
-    }
-    </style>
-    """
-
-    filename = ""
-    handler = open("finder.SmithWaterman.v2.html", 'w', encoding="utf-8")
+    handler = open(filename, 'w', encoding="utf-8")
     i = 1
     border_size = 20
     for ( i_b, i_e ), ( j_b, j_e)  in indices:
@@ -34,11 +30,19 @@ def print_html(a, b, indices ):
         handler.write( "<br><br>")
         i += 1
 
+    style = """
+    <style>
+    .match {
+    color: blue;
+    }
+    </style>
+    """
+
     handler.write( style )
     handler.close()
 
 
-def print_trg2html(trg, indices, filename, eol, color="random" ):
+def save_trg2html(trg, indices, filename, eol, color="random" ):
 
     style = "    <style>\n    .match {{ \n        color: {};\n    }}\n    </style>\n    ".format( color )
     handler = open( filename, 'w', encoding="utf-8")

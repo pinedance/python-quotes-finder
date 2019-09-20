@@ -4,6 +4,7 @@
 import numpy as np
 from tqdm import tqdm as tqdm
 from time import time
+from .report import save_result
 
 # ### Operate SmithWaterman Algorithm
 
@@ -43,6 +44,7 @@ def build_matrix(a, b, match_score=3, gap_cost=2, debug=False):
 
 def traceback( P, xy, trace_history={} ):
     end_i, end_j = xy
+    trace_history[xy] = trace_history.get(xy, 0) + 1
 
     value = P.get( (end_i, end_j), 0 )
     if value == 1 : new_i, new_j = end_i - 1, end_j - 1
@@ -50,7 +52,6 @@ def traceback( P, xy, trace_history={} ):
     elif value == 3 : new_i, new_j = end_i, end_j - 1
     else:
         return (end_i, end_j), trace_history
-    trace_history[(new_i, new_j)] = 1
     return traceback( P, (new_i, new_j), trace_history )
 
 
@@ -72,20 +73,21 @@ def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, overlap=False, de
     _q = time()
     quotes_all = []
     trace_history = {}
-    for (i, j), value in tqdm(H_sorted):
+    trace_history[H_sorted[0][0]] = 1
+    for (i, j), value in tqdm( H_sorted ):
         if value < cutoff : continue
-        if trace_history.get( (i,j), 0 ) == 1 : continue
+        if trace_history.get( (i,j) ) : continue
         end_i, end_j = i, j
         (begin_i, begin_j), trace_history = traceback( P, (end_i, end_j), trace_history )
         quotes_all.append( ( (begin_i, end_i), (begin_j, end_j) ) )     # string[begin:end]
     print( "  ... {:0.3f}\n".format( time()-_q ) )
-
+    # save_result( trace_history, "trace_history")
     print( "* Complete!\n ")
     return sorted( quotes_all, key=lambda x: (x[1][0], -x[1][1]) )
 
 def remove_overlap(trg, indices):
     # remove overlap ranges
-    print( "* Refine outputs ... ")
+    print( "* Remove Overlap ... ")
     _q = time()
 
     occupation = [0] * (len( trg ) + 1)
