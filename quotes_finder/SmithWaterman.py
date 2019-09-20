@@ -77,20 +77,20 @@ def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, overlap=False, de
         quotes_all.append( ( (begin_i, end_i), (begin_j, end_j) ) )     # string[begin:end]
     print( "  ... {:0.3f}\n".format( time()-_q ) )
 
+    print( "* Complete!\n ")
+    return sorted( quotes_all, key=lambda x: (x[1][0], -x[1][1]) )
+
+def remove_overlap(trg, indices):
     # remove overlap ranges
     print( "* Refine outputs ... ")
     _q = time()
-    if overlap:
-        quotes = quotes_all
-    else:
-        occupation = [0] * (len(b) + 1)
-        quotes = []
-        for elem in tqdm(quotes_all):
-            (_, _), (b_j, e_j) = elem
-            if sum( occupation[b_j:e_j] ) > 0: continue
-            quotes.append( elem )
-            occupation[b_j:e_j] = [1] * ( e_j - b_j )
-    print( "  ... {:0.3f}\n".format( time()-_q ) )
 
-    print( "* Complete!\n ")
-    return sorted( quotes, key=lambda x: (x[1][0], -x[1][1]) )
+    occupation = [0] * (len( trg ) + 1)
+    quotes = []
+    for elem in tqdm( indices ):
+        (_, _), (b_j, e_j) = elem
+        if sum( occupation[b_j:e_j] ) > 0: continue
+        quotes.append( elem )
+        occupation[b_j:e_j] = [1] * ( e_j - b_j )
+    print( "  ... {:0.3f}\n".format( time()-_q ) )
+    return sorted( quotes, key=lambda x: x[1][0] )
