@@ -1,4 +1,7 @@
 from time import time
+from os import path, makedirs
+import shutil
+
 from quotes_finder.finder import find_substrings
 from quotes_finder.report import save_trg2html, save_result, save_html
 
@@ -16,16 +19,28 @@ with open(txt2_path, 'r', encoding="utf-8") as fl:
 def main():
 
     ref_raw = txt2_raw
+    output_path = "OUTPUT"
+    prefix = "SOMUN"
+
+    if path.exists( output_path ):
+        shutil.rmtree( output_path )
+
+    print("# Making Output Directory ... ")
+    makedirs( output_path )
 
     for chapter_n in range(1, 81):
         q_ = time()
-        print( "Begin ... chapter {:02d}".format(chapter_n) )
+        print( "\n" + ("=" * 30) )
+        print( ">> Begin ... chapter {:02d}".format(chapter_n) )
+        print( "=" * 30)
         trg_raw = txt1_raw[ chapter_n-1 ]  # 소문 편
+        
         indices, indices_with_overlap = find_substrings( ref_raw, trg_raw, min_len=12 )
-        # save_result( indices_with_overlap, "OUTPUT/SOMUN{:02d}.indices_with_overlap.txt".format(chapter_n) )
-        # save_html( ref_raw, trg_raw, indices_with_overlap, "OUTPUT/pair_SOMUN{:02d}.html".format(chapter_n) )
-        # save_result( indices, "OUTPUT/SOMUN{:02d}.indices.txt".format(chapter_n) )
-        save_trg2html( trg_raw, indices, "OUTPUT/SOMUN{:02d}.html".format(chapter_n), eol="{n}" )
+
+        save_result( indices_with_overlap, "{}/{}{:02d}.indices_with_overlap.txt".format(output_path, prefix, chapter_n) )
+        save_html( ref_raw, trg_raw, indices_with_overlap, "{}/{}{:02d}.pair.html".format(output_path, prefix, chapter_n) )
+        save_result( indices, "{}/{}{:02d}.indices.txt".format(output_path, prefix, chapter_n) )
+        save_trg2html( trg_raw, indices, "{}/{}{:02d}.html".format(output_path, prefix, chapter_n), eol="{n}" )
         print( "End ... chapter {:02d} / {:0.3f}\n\n".format( chapter_n, time()-q_ ) )
 
 
