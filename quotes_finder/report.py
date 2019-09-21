@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import sys
-import random
+import random, json
 
 def print_output(a, b, indices ):
 
@@ -80,3 +80,22 @@ def save_trg2html(trg, indices, filename, eol, color="random" ):
     handler.write( rst )
 #     handler.write( style )
     handler.close()
+
+def save_result2html( ref_raw, trg_raw, indices, output_path ):
+
+    tmp_path = "./quotes_finder/templates/result.html"
+
+    with open( tmp_path, 'r', encoding="utf-8") as fl:
+        rst = fl.read()
+
+    ref_indices = sorted(indices, key=lambda x: (x[0][0], -x[0][1]) )
+    trg_indices = sorted(indices, key=lambda x: (x[1][0], -x[1][1]) )
+
+    rst = rst.replace( "{{REF_TEXT}}", ref_raw )
+    rst = rst.replace( "{{TRG_TEXT}}", trg_raw )
+    rst = rst.replace( "{{REF_INDICES}}", json.dumps( ref_indices ) )
+    rst = rst.replace( "{{TRG_INDICES}}", json.dumps( trg_indices ) )
+
+    rst_output = "{}/result.html".format( output_path )
+    with open( rst_output, 'w') as fl:
+        fl.write( rst )

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko" class="">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <style>
+
+    html {
+      min-height:100%;/* make sure it is at least as tall as the viewport */
+      position:relative;
+    }
+
+    body {
+        height:100%; /* force the BODY element to match the height of the HTML element */
+    }
+
+    .text {
+      height: 600px;
+      overflow-y: scroll;
+    }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="row">
+    <div id="common-btn"></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+        <div id="ref-btn"></div>
+    </div>
+    <div class="col-sm-6">
+        <div id="trg-btn"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 text card card-body bg-light" id="ref-text">
+
+    </div>
+    <div class="col-sm-6 text card card-body bg-light" id="trg-text">
+
+    </div>
+  </div>
+</div>
+
+<div id="text"></div>
+
+<script>
+
+let ref_text = `{{REF_TEXT}}`
+
+let trg_text = `{{TRG_TEXT}}`
+
+let ref_indices = {{REF_INDICES}}
+
+let trg_indices = {{TRG_INDICES}}
+
+
+
+let ref_text_tag = document.getElementById("ref-text")
+let trg_text_tag = document.getElementById("trg-text")
+let ref_text_len = ref_text.length
+let trg_text_len = trg_text.length
+
+let ref_indices_len = ref_indices.length
+let trg_indices_len = trg_indices.length
+
+function createButton(context, func, label) {
+    var button = document.createElement("input");
+    button.type = "button";
+    button.value = label;
+    button.onclick = func;
+    context.appendChild(button);
+}
+
+function refreshContents(){
+      ref_text_tag.innerText = ref_text
+      trg_text_tag.innerText = trg_text
+      document.getElementById('ref-text').scrollIntoView();
+      document.getElementById('trg-text').scrollIntoView();
+}
+
+function createButtonFunc( item, index ){
+    return function(){
+
+        var ref_start, ref_stop, trg_start, trg_stop
+        [[ref_start, ref_stop], [trg_start, trg_stop]] = item
+
+        var ref = {
+          head: document.createElement("span"),
+          body: document.createElement("span"),
+          tail: document.createElement("span"),
+        }
+
+        ref.head.id = "ref-text-head"
+        ref.body.id = "ref-text-body"
+        ref.body.style = "color: blue;"
+        ref.tail.id = "ref-text-tail"
+
+        ref.head.innerText = ref_text.slice(0, ref_start)
+        ref.body.innerText = ref_text.slice(ref_start, ref_stop)
+        ref.tail.innerText = ref_text.slice(ref_stop, ref_text_len)
+
+        ref_text_tag.innerText = ""
+        ref_text_tag.appendChild(ref.head)
+        ref_text_tag.appendChild(ref.body)
+        ref_text_tag.appendChild(ref.tail)
+
+        var trg = {
+          head: document.createElement("span"),
+          body: document.createElement("span"),
+          tail: document.createElement("span"),
+        }
+
+        trg.head.id = "trg-text-head"
+        trg.body.id = "trg-text-body"
+        trg.body.style = "color: blue;"
+        trg.tail.id = "trg-text-tail"
+
+        trg.head.innerText = trg_text.slice(0, trg_start)
+        trg.body.innerText = trg_text.slice(trg_start, trg_stop)
+        trg.tail.innerText = trg_text.slice(trg_stop, trg_text_len)
+
+        trg_text_tag.innerText = ""
+        trg_text_tag.appendChild(trg.head)
+        trg_text_tag.appendChild(trg.body)
+        trg_text_tag.appendChild(trg.tail)
+
+        document.getElementById('ref-text-body').scrollIntoView();
+        document.getElementById('ref-text').scrollBy(0, -100);
+        document.getElementById('trg-text-body').scrollIntoView();
+        document.getElementById('trg-text').scrollBy(0, -100);
+    }
+}
+
+window.onload = function() {
+
+    refreshContents()
+    let common_btn = document.getElementById("common-btn")
+    let ref_btn = document.getElementById("ref-btn")
+    let trg_btn = document.getElementById("trg-btn")
+    createButton( common_btn, refreshContents, "refresh" )
+    ref_indices.forEach(function (item, index, array) {
+        createButton( ref_btn, createButtonFunc(item, index), "REF"+String(index+1) )
+    });
+    trg_indices.forEach(function (item, index, array) {
+        createButton( trg_btn, createButtonFunc(item, index), "TRG"+String(index+1) )
+    });
+
+};
+
+
+</script>
+</body>
