@@ -17,6 +17,10 @@
         height:100%; /* force the BODY element to match the height of the HTML element */
     }
 
+    span {
+      /* white-space:nowrap */
+    }
+
     .text {
       height: 600px;
       overflow-y: scroll;
@@ -92,6 +96,7 @@
 
 <script>
 
+//--------------------------------------------------------//
 
 let ref_text = `{{REF_TEXT}}`
 
@@ -101,30 +106,29 @@ let ref_indices = {{REF_INDICES}}
 
 let trg_indices = {{TRG_INDICES}}
 
-
+//--------------------------------------------------------//
 
 let ref_text_tag = document.getElementById("ref-text")
 let trg_text_tag = document.getElementById("trg-text")
 let ref_text_len = ref_text.length
 let trg_text_len = trg_text.length
 
-let ref_indices_len = ref_indices.length
-let trg_indices_len = trg_indices.length
+let indices_len = trg_indices.length
 
 let ref_traced, trg_traced
-[ref_traced, trg_traced] = traceText()
+[ref_traced, trg_traced] = traceText( trg_indices, ref_text_len, trg_text_len )
 
 let ref_text_seg = mergeTraceText(ref_traced)
 let trg_text_seg = mergeTraceText(trg_traced)
 
-function traceText(){
+function traceText( indices, ref_text_len, trg_text_len ){
 
     // let ref_space_count = new Array( ref_text_len+1 ).fill(0);
     let ref_space_idx = new Array( ref_text_len+1 ) //.fill( new Array() );
     // let trg_space_count = new Array( trg_text_len+1 ).fill(0);
     let trg_space_idx = new Array( trg_text_len+1 ) //.fill( new Array() );
 
-    ref_indices.forEach( function(e, i, arr){
+    indices.forEach( function(e, i, arr){
           let ref_start, ref_stop, trg_start, trg_stop
           [[ref_start, ref_stop], [trg_start, trg_stop]] = e
 
@@ -145,26 +149,30 @@ function traceText(){
                   trg_space_idx[k] = [i]
               }
           }
-
     })
 
     return [ref_space_idx, trg_space_idx]
 }
 
 function mergeTraceText( traced ){
-    let last_var = traced[0]
+    let last_var, current_var // = traced[0]
     let start = 0
     let rst = []
 
-    traced.forEach(function(e, i, arr){
-        last_var = arr[i-1] || []
-        if ( e && ( JSON.stringify( e ) == JSON.stringify( last_var ) ) ){
+    for( let i=0; i<traced.length; i++){
+        last_var = traced[i-1] || []
+        current_var = traced[i] || []
+        if (  ( JSON.stringify( current_var ) == JSON.stringify( last_var ) ) ){
             // continue;
         } else {
+            // console.log( i )
+            // console.log( [ last_var, current_var ] )
+            // console.log( [ [start, i], last_var ] )
             rst.push( [ [start, i], last_var ] )
             start = i
         }
-    })
+    }
+
     rst.push( [ [start, traced.length], traced[traced.length-1] || [] ] )
     return rst
 }
@@ -174,22 +182,29 @@ function createSpanFunc( type, whole_text, indices_len ){
         let start, stop, idx_arr
         [[start, stop], idx_arr] = e
         let span = document.createElement("span");
-        if (idx_arr.length > 0){
-            span.id = type + "-" + idx_arr[0];
-        }
-        span.innerHTML = whole_text.slice( start, stop ) + addShoulderNum( type, idx_arr );
         let brightness = idx_arr.length
         span.classList.add( "highlight-" + String( ( brightness < 9 )? brightness : 9 ) )
+        let text_node = document.createTextNode( whole_text.slice( start, stop ) )
+        span.appendChild( text_node )
+        if(idx_arr.length > 0){
+            for ( let k=0; k<idx_arr.length; k++) {
+                span.classList.add( type + "-" + String(idx_arr[k]+1) )
+                addShoulderNum( span, type, idx_arr[k]+1 );
+            }
+        }
+
         return span
     }
 }
 
-function addShoulderNum( type, idx_arr ){
-    let shoulder_nums = idx_arr.map(function(e,i,arr){
-        let other_type = (type == "Ref")? "Trg" : "Ref"
-        return '<sup><a class="shoulder-num" href="#' + other_type + '-' + e + '" >' + "[" + e + "]" + "</a></sup>"
-    })
-    return shoulder_nums.join("")
+function addShoulderNum( parents_tag, type, j ){
+
+    let sup = document.createElement("sup");
+    sup.style = "cursor:pointer;"
+    sup.onclick = linkFunc(j)
+    let text_node = document.createTextNode("[" + String(j) + "]")
+    sup.appendChild( text_node )
+    parents_tag.appendChild( sup )
 }
 
 function createButton(context, func, label) {
@@ -201,11 +216,11 @@ function createButton(context, func, label) {
 }
 
 function refreshContents(){
-      // console.log( ref_text_seg )
-      // console.log( trg_text_seg )
+      console.log( ref_text_seg )
+      console.log( trg_text_seg )
 
-      let ref_text_span = ref_text_seg.map( createSpanFunc( 'Ref', ref_text, ref_indices_len ) )
-      let trg_text_span = trg_text_seg.map( createSpanFunc( 'Trg', trg_text, ref_indices_len ) )
+      let ref_text_span = ref_text_seg.map( createSpanFunc( 'Ref', ref_text, indices_len ) )
+      let trg_text_span = trg_text_seg.map( createSpanFunc( 'Trg', trg_text, indices_len ) )
 
       ref_text_span.forEach(function(e,i,arr){
           ref_text_tag.appendChild( e )
@@ -218,77 +233,31 @@ function refreshContents(){
       document.getElementById('trg-text').scrollIntoView();
 }
 
-function createButtonFunc( item, index ){
+function linkFunc( idx ){
     return function(){
 
-        var ref_start, ref_stop, trg_start, trg_stop
-        [[ref_start, ref_stop], [trg_start, trg_stop]] = item
+      let ref_item = document.getElementsByClassName('Ref-' + String(idx+1) )[0]
+      let trg_item = document.getElementsByClassName('Trg-' + String(idx+1) )[0]
 
-        var ref = {
-          head: document.createElement("span"),
-          body: document.createElement("span"),
-          tail: document.createElement("span"),
-        }
+      ref_item.scrollIntoView();
+      // document.getElementById('ref-text').scrollBy(0, -100);
+      trg_item.scrollIntoView();
+      // document.getElementById('trg-text').scrollBy(0, -100);
 
-        ref.head.id = "ref-text-head"
-        ref.body.id = "ref-text-body"
-        ref.body.style = "color: blue;"
-        ref.tail.id = "ref-text-tail"
-
-        ref.head.innerText = ref_text.slice(0, ref_start)
-        ref.body.innerText = ref_text.slice(ref_start, ref_stop)
-        ref.tail.innerText = ref_text.slice(ref_stop, ref_text_len)
-
-        ref_text_tag.innerText = ""
-        ref_text_tag.appendChild(ref.head)
-        ref_text_tag.appendChild(ref.body)
-        ref_text_tag.appendChild(ref.tail)
-
-        var trg = {
-          head: document.createElement("span"),
-          body: document.createElement("span"),
-          tail: document.createElement("span"),
-        }
-
-        trg.head.id = "trg-text-head"
-        trg.body.id = "trg-text-body"
-        trg.body.style = "color: blue;"
-        trg.tail.id = "trg-text-tail"
-
-        trg.head.innerText = trg_text.slice(0, trg_start)
-        trg.body.innerText = trg_text.slice(trg_start, trg_stop)
-        trg.tail.innerText = trg_text.slice(trg_stop, trg_text_len)
-
-        trg_text_tag.innerText = ""
-        trg_text_tag.appendChild(trg.head)
-        trg_text_tag.appendChild(trg.body)
-        trg_text_tag.appendChild(trg.tail)
-
-        document.getElementById('ref-text-body').scrollIntoView();
-        document.getElementById('ref-text').scrollBy(0, -100);
-        document.getElementById('trg-text-body').scrollIntoView();
-        document.getElementById('trg-text').scrollBy(0, -100);
     }
 }
 
 window.onload = function() {
 
     refreshContents()
-
-
 //
     let common_btn = document.getElementById("common-btn")
     let ref_btn = document.getElementById("ref-btn")
     let trg_btn = document.getElementById("trg-btn")
     createButton( common_btn, refreshContents, "refresh" )
-    ref_indices.forEach(function (item, index, array) {
-        createButton( ref_btn, createButtonFunc(item, index), "REF"+String(index+1) )
-    });
     trg_indices.forEach(function (item, index, array) {
-        createButton( trg_btn, createButtonFunc(item, index), "TRG"+String(index+1) )
+        createButton( trg_btn, linkFunc(index), "Pair"+String(index+1) )
     });
-
-
 
 };
 
