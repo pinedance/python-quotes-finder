@@ -6,37 +6,43 @@ from quotes_finder import helper, finder, report
 # from quotes_finder.finder import find_substrings
 # from quotes_finder.report import save_trg2html, save_result, save_html
 
-if len( sys.argv ) != 3 :
-    print( "USE LIKE THIS: \npython findqt.py [REF_FILE_PATH] [TARGET_FILE_PATH]" )
-    exit()
+def get_params():
 
-ref_path, trg_path = sys.argv[1], sys.argv[2]
+    if len( sys.argv ) == 3 :
+        ref_path, trg_path = sys.argv[1], sys.argv[2]
+        output_path = helper.get_output_path()
+    elif len( sys.argv ) == 4:
+        ref_path, trg_path, output_path = sys.argv[1], sys.argv[2], sys.argv[3]
+    else:
+        print( "USE LIKE THIS: \npython findqt.py [REF_FILE_PATH] [TARGET_FILE_PATH] {[OUTPUT_PATH]}" )
+        exit()
 
-if not path.isfile( ref_path ):
-    print( "There is no {}".format(ref_path) )
-    exit()
+    if not path.isfile( ref_path ):
+        print( "There is no {}".format(ref_path) )
+        exit()
 
-if not path.isfile( trg_path ):
-    print( "There is no {}".format(trg_path) )
-    exit()
+    if not path.isfile( trg_path ):
+        print( "There is no {}".format(trg_path) )
+        exit()
 
-print("# REF : {}".format( ref_path ) )
-print("# TRG : {}".format( trg_path ) )
+    if path.exists( output_path ):
+        print("Output path {} is already there.".format( output_path) )
+        exit()
+        # shutil.rmtree( output_path )
 
-def main():
+    print("# REF : {}".format( ref_path ) )
+    print("# TRG : {}".format( trg_path ) )
+    print("# OUTPUT : {}".format( output_path ) )
+
+    return ref_path, trg_path, output_path
+
+def main( ref_path, trg_path, output_path ):
 
     with open(ref_path, 'r', encoding="utf-8") as fl:
         ref_raw = fl.read()
 
     with open(trg_path, 'r', encoding="utf-8") as fl:
         trg_raw = fl.read()
-
-    output_path = helper.get_output_path()
-
-    if path.exists( output_path ):
-        print("Output path {} is already there.".format( output_path) )
-        exit()
-        # shutil.rmtree( output_path )
 
     q_ = time()
     print( "\n" + ("=" * 80) )
@@ -53,4 +59,4 @@ def main():
     print( "End ...  {:0.3f}\n\n".format( time()-q_ ) )
 
 
-main()
+main( *get_params() )
