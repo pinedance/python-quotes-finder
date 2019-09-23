@@ -10,6 +10,8 @@ We used the algorithm [Smith-Waterman](https://en.wikipedia.org/wiki/Smith%E2%80
 
 ## Usage
 
+### CLI
+
 ```
 python qtfinder.py [REF_TEXT] [TRG_TEXT] {[OUTPUT]}
 ```
@@ -27,7 +29,18 @@ If you do not have python installed, you can use precompiled files in the `./dis
 dist\qtfinder.exe [REF_TEXT] [TRG_TEXT] {[OUTPUT]}
 ```
 
-## Test
+### PKG
+
+```
+from quotesfinder import helper, finder, report
+
+ref_raw = "天癸至, 精氣溢寫, 陰陽和, 故能有子; 三八, 腎氣平均, 筋骨勁强, 故眞牙生而長極; 四八, 筋骨隆盛, 肌肉滿壯"
+trg_raw = "大衝脈盛。月事以時下。故有子。三七。腎氣平均。故眞牙生而長極。四七。筋骨堅。"
+indices, indices_with_overlap = finder.find_substrings( ref_raw, trg_raw, min_len=12 )
+report.save_html( ref_raw, trg_raw, indices_with_overlap, "output.html" )
+```
+
+### Test
 
 If you don't have sample files now, you can try this package using our sample data.
 
@@ -40,7 +53,13 @@ python qtfinder.py tests\DATA\SOMUN.SAMPLE.txt tests\DATA\DYBG.SAMPLE.txt
 dist\qtfinder.exe tests\DATA\SOMUN.SAMPLE.txt tests\DATA\DYBG.SAMPLE.txt
 ```
 
+
+
 ## Install
+
+```
+pip install git+https://github.com/pinedance/python-quotesfinder
+```
 
 This package is optimized for Python 3.6. If you are using the latest python 3.7x, some dependencies may not work properly.
 
@@ -75,6 +94,9 @@ MIT License
 
 ## Usage
 
+
+### CLI
+
 사용법은 다음과 같다.
 
 ```
@@ -94,7 +116,19 @@ python이 설치되어 있지 않다면, `dist` 폴더 안에 미리 컴파일 �
 dist\qtfinder.exe [REF_TEXT] [TRG_TEXT] {[OUTPUT]}
 ```
 
-## Test
+### PKG
+
+```
+from quotesfinder import helper, finder, report
+
+ref_raw = "天癸至, 精氣溢寫, 陰陽和, 故能有子; 三八, 腎氣平均, 筋骨勁强, 故眞牙生而長極; 四八, 筋骨隆盛, 肌肉滿壯"
+trg_raw = "大衝脈盛。月事以時下。故有子。三七。腎氣平均。故眞牙生而長極。四七。筋骨堅。"
+indices, indices_with_overlap = finder.find_substrings( ref_raw, trg_raw, min_len=12 )
+report.save_html( ref_raw, trg_raw, indices_with_overlap, "output.html" )
+```
+
+
+### Test
 
 당장 검토해 볼 파일이 없다면 sample data를 이용해 시험해 볼 수 있다.
 
@@ -113,6 +147,10 @@ sample data는 다음과 같다.
 
 ## Install
 
+```
+pip install git+https://github.com/pinedance/python-quotesfinder
+```
+
 Python 3.6에 최적화 되어 있다. 최신 python 3.7x를 사용할 경우 package들이 정상작동하지 않을 수 있다.
 
 * regex
@@ -125,6 +163,7 @@ pip install -r requirements.txt
 # or
 conda install --file reqiurements.txt
 ```
+
 
 
 ## License

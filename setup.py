@@ -9,14 +9,14 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 requirements = [ p.strip() for p in requirements.strip().splitlines() ]
 
 setup(
-    name="quotes-finder",
-    version="0.0.1",
+    name="quotesfinder",
+    version="0.0.2",
     author="Junho Oh",
     author_email="pinedance@gmail.com",
     description="finding quotes between two texts written in old Chinese",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pinedance/python-quotes-finder",
+    url="https://github.com/pinedance/python-quotesfinder",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -25,5 +25,5 @@ setup(
     ],
     python_requires='>=3.6',
     install_requires=requirements,
-    entry_points={"console_scripts": ["quotes_finder=quotes_finder.__main__:main"]},
+    entry_points={"console_scripts": ["quotesfinder=quotesfinder.__main__:main"]},
 )

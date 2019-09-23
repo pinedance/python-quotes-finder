@@ -1,1 +1,0 @@
-name = "quotes_finder"
