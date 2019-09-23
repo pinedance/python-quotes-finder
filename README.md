@@ -4,6 +4,24 @@
 
 ## Reqiurements
 
-Python 3.x
+Python 3.6
 regex
 blist
+numpy
+tqdm
+
+
+```
+pip install -r requirements.txt
+```
+
+or
+
+```
+conda install --file reqiurements.txt
+```
+
+```
+# test
+python qtfinder.py DATA/SOMUN.SAMPLE.txt DATA/DYBG.SAMPLE.txt OUTPUT
+```

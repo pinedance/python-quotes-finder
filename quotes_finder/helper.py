@@ -1,8 +1,6 @@
-import time
+import datetime
 
-def get_output_path():
+def get_timestamp():
 
-    now = time.gmtime( time.time() )
-    return "output-{:02d}{:02d}{:02d}-{:02d}{:02d}{:02d}"\
-        .format( now.tm_year, now.tm_mon, now.tm_mday,\
-                 now.tm_hour, now.tm_min, now.tm_sec )
+    dt = datetime.datetime.now()
+    return dt.strftime("%y%m%d-%H%M%S")

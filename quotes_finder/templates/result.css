@@ -1,0 +1,74 @@
+
+html {
+	min-height:100%;/* make sure it is at least as tall as the viewport */
+	position:relative;
+}
+
+body {
+		height:100%; /* force the BODY element to match the height of the HTML element */
+}
+
+span {
+	/* white-space:inherit */
+}
+
+sup {
+	color: red;
+}
+
+.hide {
+	visibility: hidden;
+	display: none;
+}
+
+.header {
+	height: 10vh;
+}
+
+.text {
+	height: 80vh;
+	overflow-y: scroll;
+}
+
+.highlight-0 {
+}
+
+.highlight-1 {
+		background-color: #fff9c4;
+}
+
+.highlight-2 {
+		background-color: #fff176;
+}
+
+.highlight-3 {
+		background-color: #ffeb3b;
+}
+
+.highlight-4 {
+		background-color: #ffecb3;
+}
+
+.highlight-5 {
+		background-color: #ffd54f;
+}
+
+.highlight-6 {
+		background-color: #ffc107;
+}
+
+.highlight-7 {
+		background-color: #ffe0b2;
+}
+
+.highlight-8 {
+		background-color: #ffb74d ;
+}
+
+.highlight-9 {
+		background-color: #ff9800 ;
+}
+
+.focus {
+		background-color: #01FF70 ;
+}

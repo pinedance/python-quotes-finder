@@ -1,2 +1,4 @@
 regex
 blist
+numpy
+tqdm

@@ -81,21 +81,32 @@ def save_trg2html(trg, indices, filename, eol, color="random" ):
 #     handler.write( style )
     handler.close()
 
-def save_result2html( ref_raw, trg_raw, indices, output_path ):
+def save_result2html( ref_raw, trg_raw, indices, filename ):
 
-    tmp_path = "./quotes_finder/templates/result.html"
+    tmp_path = "./quotes_finder/templates/result"
+    html_path = tmp_path + ".html"
+    js_path = tmp_path + ".js"
+    css_path = tmp_path + ".css"
 
-    with open( tmp_path, 'r', encoding="utf-8") as fl:
+    with open( html_path, 'r', encoding="utf-8") as fl:
         rst = fl.read()
+
+    with open( js_path, 'r', encoding="utf-8") as fl:
+        js = fl.read()
+
+    with open( css_path, 'r', encoding="utf-8") as fl:
+        css = fl.read()
 
     ref_indices = sorted(indices, key=lambda x: (x[0][0], -x[0][1]) )
     trg_indices = sorted(indices, key=lambda x: (x[1][0], -x[1][1]) )
+
+    rst = rst.replace( "{{RESULT_JS}}", js )
+    rst = rst.replace( "{{RESULT_CSS}}", css )
 
     rst = rst.replace( "{{REF_TEXT}}", ref_raw )
     rst = rst.replace( "{{TRG_TEXT}}", trg_raw )
     rst = rst.replace( "{{REF_INDICES}}", json.dumps( ref_indices ) )
     rst = rst.replace( "{{TRG_INDICES}}", json.dumps( trg_indices ) )
 
-    rst_output = "{}/result.html".format( output_path )
-    with open( rst_output, 'w') as fl:
+    with open( filename, 'w', encoding="utf-8") as fl:
         fl.write( rst )
