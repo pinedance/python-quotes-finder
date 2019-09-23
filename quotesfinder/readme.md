@@ -23,6 +23,29 @@ pyinstaller qtfinder.py --onefile
 # or
 pyinstaller qtfinder.spec
 ```
+### dist
+
+Generating distribution archives
+
+```
+# python -m pip install --user --upgrade setuptools wheel
+python setup.py sdist bdist_wheel
+```
+
+Uploading the distribution archives
+
+```
+# conda install -c conda-forge twine
+# python -m pip install --user --upgrade twine
+
+# test
+python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+```
+
+```
+python -m twine upload --repository-url https://pypi.org/legacy/ dist/*
+```
+
 
 ### Test
 
