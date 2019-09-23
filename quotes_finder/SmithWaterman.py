@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import numpy as np
+# import numpy as np
 from tqdm import tqdm as tqdm
 from time import time
 from .report import save_result

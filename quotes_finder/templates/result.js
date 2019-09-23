@@ -141,6 +141,8 @@ function refreshContents(){
       // console.log( ref_text_seg )
       // console.log( trg_text_seg )
 
+      remove_highlight_pair()
+
       let ref_text_span = ref_text_seg.map( createSpanFunc( PREFIX.ref, ref_text, indices_len ) )
       let trg_text_span = trg_text_seg.map( createSpanFunc( PREFIX.trg, trg_text, indices_len ) )
 
@@ -155,14 +157,17 @@ function refreshContents(){
       document.getElementById('trg-text').scrollIntoView();
 }
 
-function highlight_pair( idx ){
+function remove_highlight_pair(  ){
     let all_pair = document.getElementsByClassName( CLASSNAME.pair )
-    let ref_item = document.getElementsByClassName( PREFIX.ref + '-' + String(idx+1) )
-    let trg_item = document.getElementsByClassName( PREFIX.trg + '-' + String(idx+1) )
-
     for (let i=0; i<all_pair.length; i++){
         all_pair[i].classList.remove( CLASSNAME.focus )
     }
+}
+
+function highlight_pair( idx ){
+
+    let ref_item = document.getElementsByClassName( PREFIX.ref + '-' + String(idx+1) )
+    let trg_item = document.getElementsByClassName( PREFIX.trg + '-' + String(idx+1) )
 
     for (let j=0; j<ref_item.length; j++){
         ref_item[j].classList.add( CLASSNAME.focus )

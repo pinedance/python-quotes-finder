@@ -13,7 +13,39 @@ TRG는 REF의 여러 부분을 인용할 수 있다. 따라서 최종 인용구�
 중복된 부분을 찾는 방법으로 Smith-Waterman 알고리즘을 사용하였다. 글자의 일치, 추가, 삭제에 대한 점수를 부여하여 글자 단위로 상호 비교를 통해 유사한 문자열을 찾는 방법이다. 원하는 결과를 도출할 수 있는 좋은 방법이지만, 글자와 글자를 하나 하나 대조하기 때문에 연산에 많은 시간이 소요된다.
 
 
+### Build
+
+```
+# ./
+pyinstaller qtfinder.py --onefile
+# pyinstaller qtfinder.py --onefile --exclude numpy
+
+# or
+pyinstaller qtfinder.spec
+```
+
+### Test
+
+```
+python qtfinder.py tests\DATA\SOMUN.SAMPLE.txt tests\DATA\DYBG.SAMPLE.txt
+```
+
+```
+# ./
+# linux
+dist/qtfinder tests/DATA/SOMUN.SAMPLE.txt tests/DATA/DYBG.SAMPLE.txt
+
+# windows
+dist\qtfinder.exe tests\DATA\SOMUN.SAMPLE.txt tests\DATA\DYBG.SAMPLE.txt
+```
+
 
 ### REF
 
+#### Algorithm
+
 https://tiefenauer.github.io/blog/smith-waterman/
+
+#### Code
+
+* pyinstaller : https://realpython.com/pyinstaller-python/

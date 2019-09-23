@@ -1,4 +1,3 @@
 regex
 blist
-numpy
 tqdm
