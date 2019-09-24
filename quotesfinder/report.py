@@ -25,8 +25,8 @@ def save_html(a, b, indices, filename ):
     b_len = len(b)
     for ( i_b, i_e ), ( j_b, j_e)  in indices:
 
+        i_ini = max( i_b-border_size, 0 )
         j_ini = max( j_b-border_size, 0 )
-        i_ini = max( j_b-border_size, 0 )
 
         handler.write( "<div>" )
         handler.write( "\t<h2>{:d}</h2>\n".format(i) )
