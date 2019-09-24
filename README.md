@@ -40,9 +40,14 @@ indices, indices_with_overlap = finder.find_substrings( ref_raw, trg_raw, min_le
 report.save_html( ref_raw, trg_raw, indices_with_overlap, "output.html" )
 ```
 
+```
+python tests/test.py
+```
+
 ### Test
 
 If you don't have sample files now, you can try this package using our sample data.
+
 
 ```
 python qtfinder.py tests\DATA\SOMUN.SAMPLE.txt tests\DATA\DYBG.SAMPLE.txt
@@ -127,10 +132,15 @@ indices, indices_with_overlap = finder.find_substrings( ref_raw, trg_raw, min_le
 report.save_html( ref_raw, trg_raw, indices_with_overlap, "output.html" )
 ```
 
+```
+python tests/test.py
+```
+
 
 ### Test
 
 당장 검토해 볼 파일이 없다면 sample data를 이용해 시험해 볼 수 있다.
+
 
 ```
 python qtfinder.py tests\DATA\SOMUN.SAMPLE.txt tests\DATA\DYBG.SAMPLE.txt
