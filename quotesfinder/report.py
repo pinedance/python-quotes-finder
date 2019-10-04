@@ -92,18 +92,28 @@ def save_trg2html(trg, indices, filename, eol, color="random" ):
 
 def save_result2html( ref_raw, trg_raw, indices, filename ):
 
-    html_path = helper.abspath_from( os.path.join("templates", "result.html") )
-    js_path = helper.abspath_from( os.path.join("templates", "result.js") )
-    css_path = helper.abspath_from( os.path.join("templates", "result.css") )
+    try:
+        html_path = helper.abspath_from( os.path.join("templates", "result.html"), __file__ )
+        js_path = helper.abspath_from( os.path.join("templates", "result.js"), __file__ )
+        css_path = helper.abspath_from( os.path.join("templates", "result.css"), __file__ )
 
-    with open( html_path, 'r', encoding="utf-8") as fl:
-        rst = fl.read()
+        with open( html_path, 'r', encoding="utf-8") as fl:
+            rst = fl.read()
+        with open( js_path, 'r', encoding="utf-8") as fl:
+            js = fl.read()
+        with open( css_path, 'r', encoding="utf-8") as fl:
+            css = fl.read()
+    except:
+        html_path = os.path.join(".", "quotesfinder", "templates", "result.html")
+        js_path = os.path.join(".", "quotesfinder","templates", "result.js")
+        css_path = os.path.join(".", "quotesfinder","templates", "result.css")
 
-    with open( js_path, 'r', encoding="utf-8") as fl:
-        js = fl.read()
-
-    with open( css_path, 'r', encoding="utf-8") as fl:
-        css = fl.read()
+        with open( html_path, 'r', encoding="utf-8") as fl:
+            rst = fl.read()
+        with open( js_path, 'r', encoding="utf-8") as fl:
+            js = fl.read()
+        with open( css_path, 'r', encoding="utf-8") as fl:
+            css = fl.read()
 
     ref_indices = sorted(indices, key=lambda x: (x[0][0], -x[0][1]) )
     trg_indices = sorted(indices, key=lambda x: (x[1][0], -x[1][1]) )
