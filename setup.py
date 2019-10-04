@@ -10,7 +10,7 @@ requirements = [ p.strip() for p in requirements.strip().splitlines() ]
 
 setup(
     name="quotesfinder",
-    version="0.0.3",
+    version="0.0.3p1",
     author="Junho Oh",
     author_email="pinedance@gmail.com",
     description="finding quotes between two texts written in old Chinese",
@@ -24,6 +24,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    include_package_data=True,
     install_requires=requirements,
     entry_points={"console_scripts": ["quotesfinder=quotesfinder.__main__:main"]},
 )
