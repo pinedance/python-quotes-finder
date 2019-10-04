@@ -183,7 +183,7 @@ function linkFunc( idx ){
 
       let ref_item = document.getElementsByClassName( PREFIX.ref + '-' + String(idx+1) )
       let trg_item = document.getElementsByClassName( PREFIX.trg + '-' + String(idx+1) )
-
+      remove_highlight_pair()
       highlight_pair( idx )
       ref_item[0].scrollIntoView();
       // document.getElementById('ref-text').scrollBy(0, -100);

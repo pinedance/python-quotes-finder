@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import sys
+import sys, os
 import random, json
+from quotesfinder import helper
 
 def print_output(a, b, indices ):
 
@@ -91,10 +92,9 @@ def save_trg2html(trg, indices, filename, eol, color="random" ):
 
 def save_result2html( ref_raw, trg_raw, indices, filename ):
 
-    tmp_path = "./quotesfinder/templates/result"
-    html_path = tmp_path + ".html"
-    js_path = tmp_path + ".js"
-    css_path = tmp_path + ".css"
+    html_path = helper.abspath_from( os.path.join("templates", "result.html") )
+    js_path = helper.abspath_from( os.path.join("templates", "result.js") )
+    css_path = helper.abspath_from( os.path.join("templates", "result.css") )
 
     with open( html_path, 'r', encoding="utf-8") as fl:
         rst = fl.read()
