@@ -1,6 +1,7 @@
 # custom
 OUTPUT/
 output-*/
+output.html
 *.whl
 
 # Byte-compiled / optimized / DLL files

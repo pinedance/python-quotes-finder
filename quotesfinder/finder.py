@@ -4,7 +4,8 @@
 # # Code
 
 from .hanzi import strip_nonhanzi, restore_index
-from .SmithWaterman import smith_waterman, remove_overlap
+from .tool import remove_overlap
+from .SmithWaterman import smith_waterman
 
 def get_new_idx( raw_idx, ref_idx, trg_idx ):
     new_idx = []
