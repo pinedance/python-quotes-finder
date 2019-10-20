@@ -1,4 +1,2 @@
 regex
-blist
 tqdm
-numpy

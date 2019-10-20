@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
 import regex as re
-from blist import blist
 
 def strip_nonhanzi( text ):
 
@@ -18,10 +16,9 @@ def strip_nonhanzi( text ):
     return only_hanzi, non_hanzi
 
 
-
 def restore_index( text_han, non_han ):
 
-    idx_list = blist( range( len( text_han ) +1 ) )
+    idx_list = list( range( len( text_han ) +1 ) )
 
     for j, char in sorted(non_han, key=lambda x: x[0]):
         idx_list.insert(j, char)
