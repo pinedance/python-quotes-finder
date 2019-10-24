@@ -4,27 +4,20 @@
 import numpy as np
 from tqdm import tqdm as tqdm
 from time import time
-from .text import filter_partition_between
 from .report import save_result
 
 # ### Operate SmithWaterman Algorithm
 
-def build_matrix(a, b, n_=3, min_partition_size=5, min_ignore_size=5, match_score=3, gap_cost=2, debug=False, verbose=True ):
+def build_matrix(a, b, match_score=3, gap_cost=2, debug=False, verbose=True ):
 
     len_a = len(a)
     len_b = len(b)
     if verbose: print( "* Complexity: {:,} ({:,} × {:,})".format( len_a * len_b, len_a, len_b ) )
     H, P = {}, {}
 
-    a_range, b_ragne = filter_partition_between(a, b, n=n_, min_partition_size=min_partition_size, min_ignore_size=min_ignore_size )
-
     if debug:
         H_ = np.zeros( ( len_a + 1, len_b + 1), np.int)
         P_ = np.zeros( ( len_a + 1, len_b + 1), np.int)
-
-    for a_b, a_e in a_range:
-        """"""
-
 
     for i in tqdm( range( 1, len_a+1 ), disable=(not verbose) ):
         for j in range( 1, len_b+1 ):
