@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko" class="">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="http://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="http://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="http://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <style>
+
+
+html {
+	min-height:100%;/* make sure it is at least as tall as the viewport */
+	position:relative;
+}
+
+body {
+		height:100%; /* force the BODY element to match the height of the HTML element */
+}
+
+span {
+	/* white-space:inherit */
+}
+
+sup {
+	color: red;
+}
+
+.hide {
+	visibility: hidden;
+	display: none;
+}
+
+.header {
+	height: 10vh;
+}
+
+.text {
+	height: 80vh;
+	overflow-y: scroll;
+}
+
+.highlight-0 {
+}
+
+.highlight-1 {
+		background-color: #fff9c4;
+}
+
+.highlight-2 {
+		background-color: #fff176;
+}
+
+.highlight-3 {
+		background-color: #ffeb3b;
+}
+
+.highlight-4 {
+		background-color: #ffecb3;
+}
+
+.highlight-5 {
+		background-color: #ffd54f;
+}
+
+.highlight-6 {
+		background-color: #ffc107;
+}
+
+.highlight-7 {
+		background-color: #ffe0b2;
+}
+
+.highlight-8 {
+		background-color: #ffb74d ;
+}
+
+.highlight-9 {
+		background-color: #ff9800 ;
+}
+
+.focus {
+		background-color: #01FF70 ;
+}
+
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="row header">
+    <div class="col-sm-12">
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="text-center">Quote Finder Report</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+        <div id="common-btn"></div>
+        </div>
+        <div class="col-sm-6">
+        <div id="trg-btn"></div>
+        </div>
+    </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6" id="ref-area">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 id="ref-title">Reference Text</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="text card-body bg-light">
+                        <p id="ref-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6" id="trg-area">
+        <div class="row">
+          <div class="col-sm-12">
+              <h2 id="trg-title">Target Text</h2>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="text card-body bg-light">
+                        <p id="trg-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div id="text"></div>
+
+<div id="ref-raw" class="hide">
+天癸至, 精氣溢寫, 陰陽和, 故能有子; 三八, 腎氣平均, 筋骨勁强, 故眞牙生而長極; 四八, 筋骨隆盛, 肌肉滿壯
+</div>
+
+<div id="trg-raw" class="hide">
+大衝脈盛。月事以時下。故有子。三七。腎氣平均。故眞牙生而長極。四七。筋骨堅。
+</div>
+
+<script>
+
+let ref_indices = [[[16, 53], [11, 36]]]
+
+let trg_indices = [[[16, 53], [11, 36]]]
+
+//--------------------------------------------------------//
+
+let ref_text = document.getElementById("ref-raw").innerText.trim()
+let trg_text = document.getElementById("trg-raw").innerText.trim()
+
+// console.log(ref_text)
+// let ref_text = document.getElementById("ref-raw").textContent
+// let trg_text = document.getElementById("trg-raw").textContent
+
+let ref_text_tag = document.getElementById("ref-text")
+let trg_text_tag = document.getElementById("trg-text")
+let ref_text_len = ref_text.length
+let trg_text_len = trg_text.length
+
+let indices_len = trg_indices.length
+
+let ref_traced, trg_traced
+[ref_traced, trg_traced] = traceText( trg_indices, ref_text_len, trg_text_len )
+
+let ref_text_seg = mergeTraceText(ref_traced)
+let trg_text_seg = mergeTraceText(trg_traced)
+
+const PREFIX = {
+    ref: "Ref",
+    trg: "Trg"
+}
+
+const CLASSNAME = {
+    pair: "pair",
+    highlight: "highlight",
+    focus: 'focus'
+}
+
+function traceText( indices, ref_text_len, trg_text_len ){
+
+    // let ref_space_count = new Array( ref_text_len+1 ).fill(0);
+    let ref_space_idx = new Array( ref_text_len+1 ) //.fill( new Array() );
+    // let trg_space_count = new Array( trg_text_len+1 ).fill(0);
+    let trg_space_idx = new Array( trg_text_len+1 ) //.fill( new Array() );
+
+    indices.forEach( function(e, i, arr){
+          let ref_start, ref_stop, trg_start, trg_stop
+          [[ref_start, ref_stop], [trg_start, trg_stop]] = e
+
+          for (let j=ref_start; j<ref_stop; j++){
+              // ref_space_count[j] += 1
+              if ( ref_space_idx[j] ){
+                  ref_space_idx[j].push( i )
+              } else {
+                  ref_space_idx[j] = [i]
+              }
+          }
+
+          for (let k=trg_start; k<trg_stop; k++){
+              // trg_space_count[k] += 1
+              if ( trg_space_idx[k] ){
+                  trg_space_idx[k].push( i )
+              } else {
+                  trg_space_idx[k] = [i]
+              }
+          }
+    })
+
+    return [ref_space_idx, trg_space_idx]
+}
+
+function mergeTraceText( traced ){
+    let last_var, current_var // = traced[0]
+    let start = 0
+    let rst = []
+
+    for( let i=0; i<traced.length; i++){
+        last_var = traced[i-1] || []
+        current_var = traced[i] || []
+        if (  ( JSON.stringify( current_var ) == JSON.stringify( last_var ) ) ){
+            // continue;
+        } else {
+            // console.log( i )
+            // console.log( [ last_var, current_var ] )
+            // console.log( [ [start, i], last_var ] )
+            rst.push( [ [start, i], last_var ] )
+            start = i
+        }
+    }
+
+    rst.push( [ [start, traced.length], traced[traced.length-1] || [] ] )
+    return rst
+}
+
+function createSpanFunc( type, whole_text, indices_len ){
+    return function( e, i, arr ){
+        let start, stop, idx_arr
+        [[start, stop], idx_arr] = e
+        let span = document.createElement("span");
+
+        span.classList.add( CLASSNAME.pair )
+        span.classList.add( type )
+        let brightness = idx_arr.length
+        span.classList.add( CLASSNAME.highlight )
+        span.classList.add( CLASSNAME.highlight + "-" + String( ( brightness < 9 )? brightness : 9 ) )
+
+        let span_text = whole_text.slice( start, stop )
+        let span_text_by_line = span_text.split(/\r?\n/)
+
+        for (let j=0; j<span_text_by_line.length; j++){
+            let text_node = document.createTextNode( span_text_by_line[j] )
+            span.appendChild( text_node )
+            if( j != ( span_text_by_line.length - 1 ) ){
+                span.appendChild( document.createElement("br") )
+            }
+        }
+
+        if(idx_arr.length > 0){
+            for ( let k=0; k<idx_arr.length; k++) {
+                span.classList.add( type + "-" + String(idx_arr[k]+1) )
+                addShoulderNum( span, type, idx_arr[k] );
+            }
+        }
+
+        return span
+    }
+}
+
+function addShoulderNum( parents_tag, type, j ){
+
+    let sup = document.createElement("sup");
+    sup.style = "cursor:pointer;"
+    sup.onclick = linkFunc(j)
+    let text_node = document.createTextNode("[" + String(j+1) + "]")
+    sup.appendChild( text_node )
+    parents_tag.appendChild( sup )
+}
+
+function createButton(context, func, label) {
+    var button = document.createElement("input");
+    button.type = "button";
+    button.value = label;
+    button.onclick = func;
+    context.appendChild(button);
+}
+
+function refreshContents(){
+      // console.log( ref_text_seg )
+      // console.log( trg_text_seg )
+
+      remove_highlight_pair()
+
+      let ref_text_span = ref_text_seg.map( createSpanFunc( PREFIX.ref, ref_text, indices_len ) )
+      let trg_text_span = trg_text_seg.map( createSpanFunc( PREFIX.trg, trg_text, indices_len ) )
+
+      ref_text_span.forEach(function(e,i,arr){
+          ref_text_tag.appendChild( e )
+      })
+
+      trg_text_span.forEach(function(e,i,arr){
+          trg_text_tag.appendChild( e )
+      })
+      document.getElementById('ref-text').scrollIntoView();
+      document.getElementById('trg-text').scrollIntoView();
+}
+
+function remove_highlight_pair(  ){
+    let all_pair = document.getElementsByClassName( CLASSNAME.pair )
+    for (let i=0; i<all_pair.length; i++){
+        all_pair[i].classList.remove( CLASSNAME.focus )
+    }
+}
+
+function highlight_pair( idx ){
+
+    let ref_item = document.getElementsByClassName( PREFIX.ref + '-' + String(idx+1) )
+    let trg_item = document.getElementsByClassName( PREFIX.trg + '-' + String(idx+1) )
+
+    for (let j=0; j<ref_item.length; j++){
+        ref_item[j].classList.add( CLASSNAME.focus )
+    }
+
+    for (let k=0; k<trg_item.length; k++){
+        trg_item[k].classList.add( CLASSNAME.focus )
+    }
+}
+
+function linkFunc( idx ){
+    return function(){
+
+      let ref_item = document.getElementsByClassName( PREFIX.ref + '-' + String(idx+1) )
+      let trg_item = document.getElementsByClassName( PREFIX.trg + '-' + String(idx+1) )
+      remove_highlight_pair()
+      highlight_pair( idx )
+      ref_item[0].scrollIntoView();
+      // document.getElementById('ref-text').scrollBy(0, -100);
+      trg_item[0].scrollIntoView();
+      // document.getElementById('trg-text').scrollBy(0, -100);
+      console.log( "Button: Pair" + String(idx+1) + " ； " + "IDX: " + String(idx) )
+    }
+}
+
+window.onload = function() {
+
+    refreshContents()
+//
+    let common_btn = document.getElementById("common-btn")
+    let ref_btn = document.getElementById("ref-btn")
+    let trg_btn = document.getElementById("trg-btn")
+    createButton( common_btn, refreshContents, "refresh" )
+    trg_indices.forEach(function (item, index, array) {
+        createButton( trg_btn, linkFunc(index), "Pair"+String(index+1) )
+    });
+
+};
+
+
+</script>
+</body>

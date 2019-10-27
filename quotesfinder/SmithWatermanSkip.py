@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import numpy as np
 from tqdm import tqdm as tqdm
 from time import time
 from .text import filter_partition_between
@@ -10,44 +9,41 @@ from .SmithWaterman import traceback
 
 # ### Operate SmithWaterman Algorithm
 
-def build_matrix(a, b, match_score=3, gap_cost=2, debug=False, verbose=True, n_=3, min_partition_size=5, min_ignore_size=5 ):
+def build_matrix(a, b, match_score=3, gap_cost=2, debug=False, verbose=True, \
+                 min_len=8, min_ignore_size=1 ):
 
     len_a = len(a)
     len_b = len(b)
     if verbose: print( "* Complexity: {:,} ({:,} × {:,})".format( len_a * len_b, len_a, len_b ) )
     H, P = {}, {}
 
-    a_range, b_ragne = filter_partition_between(a, b, n=n_, min_partition_size=min_partition_size, min_ignore_size=min_ignore_size )
+    a_range, b_range = filter_partition_between(a, b, min_partition_size=min_len, min_ignore_size=min_ignore_size, verbose=verbose )
+    a_skiped = sum( [ list( range(a+1, b+1) ) for a, b in a_range ], [] )
+    b_skiped = sum( [ list( range(a+1, b+1) ) for a, b in b_range ], [] )
+    len_a_skiped = len(a_skiped)
+    len_b_skiped = len(b_skiped)
+    if verbose: print( "* Complexity(Skiped): {:,} ({:,} × {:,})".format( len_a_skiped * len_b_skiped, len_a_skiped, len_b_skiped ) )
+
+    for i in tqdm( a_skiped, disable=(not verbose) ):
+        for j in b_skiped:
+            match = H.get( (i - 1, j - 1 ), 0 ) + ( match_score if a[i - 1] == b[j - 1] else - match_score )
+            delete = H.get( (i - 1, j ), 0 )  - gap_cost
+            insert = H.get( (i , j - 1 ), 0 )  - gap_cost
+            values = [ 0, match, delete, insert ]
+            mx = max( values )
+            if mx == 0 : continue
+            argmax = values.index( mx )
+            H[ (i, j) ] = mx
+            P[ (i, j) ] = argmax
 
     if debug:
-        H_ = np.zeros( ( len_a + 1, len_b + 1), np.int)
-        P_ = np.zeros( ( len_a + 1, len_b + 1), np.int)
-
-    for a_b, a_e in tqdm( a_range, disable=(not verbose) ):
-        for i in range( a_b+1, a_e+1 ):
-            for b_b, b_e in b_range:
-                for j in range( b_b+1, b_e+1 ):
-                    match = H.get( (i - 1, j - 1 ), 0 ) + ( match_score if a[i - 1] == b[j - 1] else - match_score )
-                    delete = H.get( (i - 1, j ), 0 )  - gap_cost
-                    insert = H.get( (i , j - 1 ), 0 )  - gap_cost
-                    values = [ 0, match, delete, insert ]
-                    mx = max( values )
-                    if mx == 0 : continue
-                    argmax = values.index( mx )
-                    H[ (i, j) ] = mx
-                    P[ (i, j) ] = argmax
-
-                    if debug:
-                        H_[i,j] = mx
-                        P_[i,j] = argmax
-
-    if debug:
-        print(H_)
-        print(P_)
+        print(H)
+        print(P)
 
     return H, P
 
-def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, overlap=False, debug=False, verbose=True, n_=3, min_partition_size=5, min_ignore_size=5 ):
+def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, debug=False, verbose=True,\
+                    min_ignore_size=1 ):
     """
     a : source
     b : target
@@ -59,7 +55,7 @@ def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, overlap=False, de
 
     # different from original version
     H, P = build_matrix(a, b, match_score, gap_cost, debug=debug, verbose=verbose,\
-                        n_=n_, min_partition_size=min_partition_size, min_ignore_size=min_ignore_size)
+                        min_len=min_len, min_ignore_size=min_ignore_size)
     ###
 
     H_lst = H.items()

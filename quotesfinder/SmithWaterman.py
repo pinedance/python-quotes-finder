@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import numpy as np
 from tqdm import tqdm as tqdm
 from time import time
 from .report import save_result
@@ -15,10 +14,6 @@ def build_matrix(a, b, match_score=3, gap_cost=2, debug=False, verbose=True ):
     if verbose: print( "* Complexity: {:,} ({:,} × {:,})".format( len_a * len_b, len_a, len_b ) )
     H, P = {}, {}
 
-    if debug:
-        H_ = np.zeros( ( len_a + 1, len_b + 1), np.int)
-        P_ = np.zeros( ( len_a + 1, len_b + 1), np.int)
-
     for i in tqdm( range( 1, len_a+1 ), disable=(not verbose) ):
         for j in range( 1, len_b+1 ):
             match = H.get( (i - 1, j - 1 ), 0 ) + ( match_score if a[i - 1] == b[j - 1] else - match_score )
@@ -31,13 +26,9 @@ def build_matrix(a, b, match_score=3, gap_cost=2, debug=False, verbose=True ):
             H[ (i, j) ] = mx
             P[ (i, j) ] = argmax
 
-            if debug:
-                H_[i,j] = mx
-                P_[i,j] = argmax
-
     if debug:
-        print(H_)
-        print(P_)
+        print(H)
+        print(P)
 
     return H, P
 
@@ -46,7 +37,7 @@ def traceback( P, xy, trace_history={} ):
     end_i, end_j = xy
     # 경로겹침시 (-1, -1) 반환
     if trace_history.get(xy): return (-1, -1), trace_history
-    trace_history[xy] = trace_history.get(xy, 0) + 1
+    trace_history[xy] = 1
 
     value = P.get( (end_i, end_j), 0 )
     if value == 1 : new_i, new_j = end_i - 1, end_j - 1
@@ -57,7 +48,7 @@ def traceback( P, xy, trace_history={} ):
     return traceback( P, (new_i, new_j), trace_history )
 
 
-def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, overlap=False, debug=False, verbose=True ):
+def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, debug=False, verbose=True ):
     """
     a : source
     b : target
