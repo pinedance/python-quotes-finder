@@ -1,31 +1,38 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from tqdm import tqdm as tqdm
 from time import time
-from .text import filter_partition_between
+from itertools import chain
+
+from tqdm import tqdm as tqdm
+
+from .text import get_attention_each
 from .report import save_result
 from .SmithWaterman import traceback
 
 # ### Operate SmithWaterman Algorithm
 
-def build_matrix(a, b, match_score=3, gap_cost=2, debug=False, verbose=True, \
-                 min_len=8, min_ignore_size=1 ):
+def build_matrix( a, b, match_score=3, gap_cost=2, debug=False, verbose=True, \
+                  n=3, min_len=8, max_gap=3 ):
 
     len_a = len(a)
     len_b = len(b)
     if verbose: print( "* Complexity: {:,} ({:,} × {:,})".format( len_a * len_b, len_a, len_b ) )
     H, P = {}, {}
 
-    a_range, b_range = filter_partition_between(a, b, min_partition_size=min_len, min_ignore_size=min_ignore_size, verbose=verbose )
-    a_skiped = sum( [ list( range(a+1, b+1) ) for a, b in a_range ], [] )
-    b_skiped = sum( [ list( range(a+1, b+1) ) for a, b in b_range ], [] )
-    len_a_skiped = len(a_skiped)
-    len_b_skiped = len(b_skiped)
-    if verbose: print( "* Complexity(Skiped): {:,} ({:,} × {:,})".format( len_a_skiped * len_b_skiped, len_a_skiped, len_b_skiped ) )
+    a_attention, b_attention = get_attention_each(a, b, n=n, min_len=min_len, max_gap=max_gap, verbose=verbose )
+    if debug:
+        print("a_attention", a_attention)
+        print("b_attention", b_attention)
 
-    for i in tqdm( a_skiped, disable=(not verbose) ):
-        for j in b_skiped:
+    a_ranges = list( chain( *[ range(p+1, q+1) for p, q in a_attention ] ) )
+    b_ranges = list( chain( *[ range(p+1, q+1) for p, q in b_attention ] ) )
+    len_a_attention = sum( [ q-p+1 for p, q in a_attention ] )
+    len_b_attention = sum( [ q-p+1 for p, q in b_attention ] )
+    if verbose: print( "* Complexity(Skiped): {:,} ({:,} × {:,})".format( len_a_attention * len_b_attention, len_a_attention, len_b_attention ) )
+
+    for i in tqdm( a_ranges, disable=(not verbose) ):
+        for j in b_ranges:
             match = H.get( (i - 1, j - 1 ), 0 ) + ( match_score if a[i - 1] == b[j - 1] else - match_score )
             delete = H.get( (i - 1, j ), 0 )  - gap_cost
             insert = H.get( (i , j - 1 ), 0 )  - gap_cost
@@ -37,13 +44,14 @@ def build_matrix(a, b, match_score=3, gap_cost=2, debug=False, verbose=True, \
             P[ (i, j) ] = argmax
 
     if debug:
+        print("*", i, j)
         print(H)
         print(P)
 
     return H, P
 
-def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, debug=False, verbose=True,\
-                    min_ignore_size=1 ):
+def smith_waterman( a, b, match_score=3, gap_cost=2, min_len=8, debug=False, verbose=True,\
+                    n=3, max_gap=3 ):
     """
     a : source
     b : target
@@ -54,8 +62,8 @@ def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, debug=False, verb
     _q = time()
 
     # different from original version
-    H, P = build_matrix(a, b, match_score, gap_cost, debug=debug, verbose=verbose,\
-                        min_len=min_len, min_ignore_size=min_ignore_size)
+    H, P = build_matrix( a, b, match_score=match_score, gap_cost=gap_cost, debug=debug, verbose=verbose,\
+                         n=n, min_len=min_len, max_gap=max_gap )
     ###
 
     H_lst = H.items()

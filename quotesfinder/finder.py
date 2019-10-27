@@ -14,8 +14,8 @@ def get_new_idx( raw_idx, ref_idx, trg_idx ):
         new_idx.append( ( ( ref_idx.index( i_b ), ref_idx.index( i_e ) ), ( trg_idx.index(j_b), trg_idx.index(j_e) ) ) )
     return new_idx
 
-def find_substrings( ref, trg, min_len=8, verbose=True, debug=False, skip=False, \
-                     min_ignore_size=1 ):
+def find_substrings( ref, trg, match_score=3, gap_cost=2, min_len=8, verbose=True, debug=False, skip=False, \
+                     n=3, max_gap=3 ):
 
     if verbose: print("# Texts Preprocessing")
     ref_han, ref_non_han = strip_nonhanzi( ref )
@@ -26,10 +26,10 @@ def find_substrings( ref, trg, min_len=8, verbose=True, debug=False, skip=False,
 
     if verbose: print("# Finding Similar Substrings")
     if skip:
-        raw_idx_with_overlap = smith_waterman_skip( ref_han, trg_han, min_len=min_len, debug=debug, verbose=verbose, \
-                                                    min_ignore_size=min_ignore_size )
+        raw_idx_with_overlap = smith_waterman_skip( ref_han, trg_han, match_score=match_score, gap_cost=gap_cost, min_len=min_len, debug=debug, verbose=verbose, \
+                                                    n=n, max_gap=max_gap )
     else:
-        raw_idx_with_overlap = smith_waterman( ref_han, trg_han, min_len=min_len, debug=debug, verbose=verbose )
+        raw_idx_with_overlap = smith_waterman( ref_han, trg_han, match_score=match_score, gap_cost=gap_cost, min_len=min_len, debug=debug, verbose=verbose )
     raw_idx = remove_overlap( trg_han, raw_idx_with_overlap, verbose=verbose )
 
     if verbose: print("# Building new indices")

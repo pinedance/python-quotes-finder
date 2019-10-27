@@ -59,7 +59,7 @@ def smith_waterman(a, b, match_score=3, gap_cost=2, min_len=8, debug=False, verb
     _q = time()
 
     # different from skip version
-    H, P = build_matrix(a, b, match_score, gap_cost, debug=debug, verbose=verbose )
+    H, P = build_matrix(a, b, match_score=match_score, gap_cost=gap_cost, debug=debug, verbose=verbose )
     ###
 
     H_lst = H.items()
