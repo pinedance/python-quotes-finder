@@ -79,6 +79,12 @@ pip install -r requirements.txt
 conda install --file reqiurements.txt
 ```
 
+## Tip
+
+* if you need to read a utf-8 file, you better use encoding as 'utf-8-sig' instead of 'utf-8' to remove BOM charcter.
+
+
+
 
 ## License
 
