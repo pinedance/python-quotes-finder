@@ -139,9 +139,10 @@ function addShoulderNum(parents_tag, type, j) {
 }
 
 function createButton(context, func, label) {
-    var button = document.createElement("input");
+    var button = document.createElement("button");
     button.type = "button";
-    button.value = label;
+    button.classList.add("dropdown-item")
+    button.innerText = label;
     button.onclick = func;
     context.appendChild(button);
 }
@@ -203,12 +204,21 @@ function linkFunc(idx) {
 }
 
 window.onload = function () {
+    // custom data
+	
+    let customData = {
+        refTextTitle: "（text_title）",
+        trgTextTitle: "（text_title）"
+    }
 
+    document.getElementById("ref-text-title").innerText = customData.refTextTitle
+    document.getElementById("trg-text-title").innerText = customData.trgTextTitle
+	
     refreshContents()
     //
-    let common_btn = document.getElementById("common-btn")
-    let ref_btn = document.getElementById("common-btn")
-    let trg_btn = document.getElementById("common-btn")
+    let common_btn = document.getElementById("link-dropdown")
+    let ref_btn = document.getElementById("link-dropdown")
+    let trg_btn = document.getElementById("link-dropdown")
     createButton(common_btn, refreshContents, "refresh")
     trg_indices.forEach(function (item, index, array) {
         createButton(trg_btn, linkFunc(index), "Pair" + String(index + 1))

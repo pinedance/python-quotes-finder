@@ -1,4 +1,3 @@
-
 html {
 	min-height:100%;/* make sure it is at least as tall as the viewport */
 	position:relative;
@@ -34,41 +33,51 @@ sup {
 }
 
 .highlight-1 {
-		background-color: #fff9c4;
+    background-color: #fff9c4;
 }
 
 .highlight-2 {
-		background-color: #fff176;
+    background-color: #fff176;
 }
 
 .highlight-3 {
-		background-color: #ffeb3b;
+    background-color: #ffeb3b;
 }
 
 .highlight-4 {
-		background-color: #ffecb3;
+    background-color: #ffecb3;
 }
 
 .highlight-5 {
-		background-color: #ffd54f;
+    background-color: #ffd54f;
 }
 
 .highlight-6 {
-		background-color: #ffc107;
+    background-color: #ffc107;
 }
 
 .highlight-7 {
-		background-color: #ffe0b2;
+    background-color: #ffe0b2;
 }
 
 .highlight-8 {
-		background-color: #ffb74d ;
+    background-color: #ffb74d ;
 }
 
 .highlight-9 {
-		background-color: #ff9800 ;
+    background-color: #ff9800 ;
 }
 
 .focus {
-		background-color: #01FF70 ;
+    background-color: #01FF70 ;
+}
+
+.container {
+    min-width: 100%;
+    margin-top: 20px
+}
+
+.dropdown-menu{
+    max-height:400px;
+    overflow-y:auto;
 }

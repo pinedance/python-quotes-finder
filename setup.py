@@ -10,7 +10,7 @@ requirements = [ p.strip() for p in requirements.strip().splitlines() ]
 
 setup(
     name="quotesfinder",
-    version="0.0.6p1",
+    version="0.0.6p2",
     author="Junho Oh",
     author_email="pinedance@gmail.com",
     description="finding quotes between two texts written in old Chinese",
